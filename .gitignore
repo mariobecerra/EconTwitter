@@ -38,3 +38,14 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# data folder
+data/*
+
+# temporary data folder
+temp/*
+
+
+
+
+
