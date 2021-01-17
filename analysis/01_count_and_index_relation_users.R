@@ -20,7 +20,10 @@ library(here)
 # relation_df = disk.frame(disk_frame_folder)
 # diskframe_files = list.files(disk_frame_folder)
 
+
+# Make sure file exists and/or isn't compressed.
 relation_file = here("data/relation.csv")
+
 
 
 # Code --------------------------------------------------------------------
@@ -75,13 +78,13 @@ for(i in 1:n_chunks){
   minutes_passed = round(as.numeric(difftime(t2, t1, units = "mins")), 2)
   cat("Done. Elapsed time:", minutes_passed, "minutes.\n")
   
-  cat("\tSaving RDS for column A...")
-  saveRDS(
-    index_A_list, 
-    here(paste0(out_folder, "index_A_list_chunk_", sprintf("%02d", i), ".rds")),
-    compress = F
-  )
-  cat("Done.\n")
+  # cat("\tSaving RDS for column A...")
+  # saveRDS(
+  #   index_A_list, 
+  #   here(paste0(out_folder, "index_A_list_chunk_", sprintf("%02d", i), ".rds")),
+  #   compress = F
+  # )
+  # cat("Done.\n")
   
   # cat("\tSaving csv for column A...")
   fwrite(
@@ -113,13 +116,13 @@ for(i in 1:n_chunks){
   cat("Done. Elapsed time:", minutes_passed, "minutes.\n")
   
   
-  cat("\tSaving RDS for column B...")
-  saveRDS(
-    index_B_list, 
-    here(paste0(out_folder, "index_B_list_chunk_", sprintf("%02d", i), ".rds")),
-    compress = F
-  )
-  cat("Done.\n")
+  # cat("\tSaving RDS for column B...")
+  # saveRDS(
+  #   index_B_list, 
+  #   here(paste0(out_folder, "index_B_list_chunk_", sprintf("%02d", i), ".rds")),
+  #   compress = F
+  # )
+  # cat("Done.\n")
   
   # cat("\tSaving csv for column B...")
   fwrite(
