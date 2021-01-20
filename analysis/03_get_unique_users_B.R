@@ -1,6 +1,7 @@
-# Setup -------------------------------------------------------------------
+# Reads each chunk in relation_chunks_folder and finds the unique users in column B. It saves the list of unique users in relation_chunks_folder in the unique_users_B.csv file.
+# The whole script takes about 3 minutes.
 
-# Takes around 3 minutes
+# Setup -------------------------------------------------------------------
 
 library(tidyverse)
 library(data.table)

@@ -1,3 +1,5 @@
+# Copmutes indices of where each ID of column A is in relation_newids.csv and relation_newids.fst.
+
 library(fst)
 library(data.table)
 library(tidyverse)

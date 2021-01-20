@@ -1,5 +1,5 @@
 # reads relation.csv in chunks and saves the counts of unique users in each chunk.
-# It also indexes where each user is located.
+# It also indexes where each user is located (but in the end I modified the code, so this is not used because it is not useful.)
 
 # Setup -------------------------------------------------------------------
 
@@ -21,7 +21,8 @@ library(here)
 # diskframe_files = list.files(disk_frame_folder)
 
 
-# Make sure file exists and/or isn't compressed.
+# Before reading the file, we have to first make sure file exists and/or isn't compressed.
+# This has to be done manually, it is not checked in this file.
 relation_file = here("data/relation.csv")
 
 

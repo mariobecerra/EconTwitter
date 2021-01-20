@@ -1,3 +1,5 @@
+# Reads files in unique_users_A.csv and unique_users_B.csv in relation_chunks_folder folder. Creates a tibble with the unique users and assigns a unique user id to each user. This new ID is an integer that goes from 1 to the number of unique users.
+
 # Setup -------------------------------------------------------------------
 
 #Around 20 minutes

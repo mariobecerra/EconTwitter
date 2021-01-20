@@ -1,3 +1,5 @@
+# Reads relation_newids.csv file and saves it in fst format with no compression.
+
 library(tidyverse)
 library(fst)
 library(here)

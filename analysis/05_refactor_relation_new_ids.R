@@ -1,3 +1,5 @@
+# Reads relation.csv file in parts, appends it the new IDs for columns A and B, and saves the new relations in a csv file with the new IDs. It saves only the new IDs and not the older ones. It has the same order as the original relation.csv file.
+
 # Setup -------------------------------------------------------------------
 
 library(tidyverse)
