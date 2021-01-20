@@ -1,4 +1,6 @@
-# Copmutes indices of where each ID of column A is in relation_newids.csv and relation_newids.fst.
+# Computes indices of where each ID of column A is in relation_newids.csv and relation_newids.fst.
+# It reads relation.fst in chunks (a total of 20 chunks), finds the row of each user, saves this into a tibble, and saves this tibble into a fst file (indices_A_chunk_i.fst).
+# In the end an extra fst file is created (chunk_index_A.fst) that has the information of the information of each user in each chunk. This chunk_index_A.fst file is ordered by user and has two columns: user and chunk.
 
 library(fst)
 library(data.table)
