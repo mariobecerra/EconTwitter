@@ -34,9 +34,14 @@ if(!file.exists(n_followback_A_filename)){
 }
 
 
+# Find users with only one follower
+indices_one_follower = which(info_users_A$n_followers == 1)
+
 # Indices of rows with NAs, i.e., users for which n_followback hasn't been computed.
 # This is because the for loop at the end of the file iterates over all users and creates checkpoints. This way, indices_to_do knows where to start.
-indices_to_do = which(is.na(info_users_A$n_followback))
+# It also ignores the users with only one follower.
+# indices_to_do = which(is.na(info_users_A$n_followback))
+indices_to_do = setdiff(which(is.na(info_users_A$n_followback)), indices_one_follower)
 
 
 # Read file with the indexes for each user in relation file.
@@ -110,6 +115,56 @@ for(i in indices_to_do){
 }
 
 
+
+
+
+
+
+indices_one_follower = which(info_users_A$n_followers == 1)
+
+
+users = info_users_A$user[indices_one_follower[1:1000000]]
+# users = info_users_A$user[indices_one_follower[2:10]]
+
+indices_users = indices_A[.(users), index]
+# followers_users = relation$B[indices_users]
+
+users_follower = relation[indices_A[.(users), index],]
+setDT(users_follower, key = c("A", "B"))
+
+
+temp = relation[indices_users,] %>% 
+  mutate(aux = 1L)
+setDT(temp, key = "B")
+indices_A[temp, on = "user", aux := i.aux, allow.cartesian=TRUE]
+
+indices_followers_users = indices_A[aux == 1, index]
+# indices_followers_users1 = indices_A[!is.na(aux), index] # same as before
+# indices_followers_users0 = indices_A[.(followers_users), index] # Same as before
+# indices_followers_users2 = temp %>%  # In theory should be same as before, but I ran out of RAM.
+#   inner_join(indices_A)
+
+# # Remove the created column
+# indices_A[, aux:=NULL]
+# We can actually remove the whole table now
+rm(indices_A)
+
+
+followers_of_followers = relation[indices_followers_users,] %>% 
+  set_names(c("B", "A")) %>% 
+  mutate(n_followback = 1L)
+setDT(followers_of_followers, key = c("B", "A"))
+
+
+users_follower[followers_of_followers, on = c("A", "B"), n_followback := i.n_followback]
+users_follower[is.na(n_followback), n_followback := ifelse(is.na(n_followback), 0L, n_followback)]
+# Same as doing this, but much faster (around 20x faster) because it's updated by reference
+# users_follower = users_follower %>% 
+#   left_join(followers_of_followers) %>% 
+#   mutate(n_followback = ifelse(is.na(n_followback), 0L, n_followback))
+# https://stackoverflow.com/questions/34598139/left-join-using-data-table
+# If you want to add the b values of B to A, then it's best to join A with B and update A by reference as follows:
+# A[B, on = 'a', bb := i.b]
 
 
 
