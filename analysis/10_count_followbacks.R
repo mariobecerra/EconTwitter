@@ -69,13 +69,14 @@ gc()
 # It calculates around 130,154 users per hour.
 # I calculated this by dividing the running hours on 2021-01-22 at 1 pm (13 hours at that moment), and the 1,692,000 processed users until that time.
 # From user 1,692,000 to 2,610,100 it took 84 minutes, meaning that it did 655,714 users per hour. User 2,610,100 had 19 followers.
+last_index_to_do = tail(indices_to_do, 1)
 start_time = Sys.time()
 for(i in indices_to_do){
   
   curr_time = Sys.time()
   total_elapsed_minutes = as.numeric(difftime(curr_time, start_time, units = "mins"))
   if(i %% 100 == 1){
-    cat("Doing user", i, "of", nrow(info_users_A))
+    cat("Doing user", scales::comma(i), "of", scales::comma(last_index_to_do))
     cat("\n\tElapsed minutes so far:", total_elapsed_minutes, "\n\n")
   }
   
@@ -123,8 +124,8 @@ for(i in indices_to_do){
 indices_one_follower = which(info_users_A$n_followers == 1)
 
 
-users = info_users_A$user[indices_one_follower[1:1000000]]
-# users = info_users_A$user[indices_one_follower[2:10]]
+# users = info_users_A$user[indices_one_follower[1:1000000]]
+users = info_users_A$user[indices_one_follower[2:10]]
 
 indices_users = indices_A[.(users), index]
 # followers_users = relation$B[indices_users]
