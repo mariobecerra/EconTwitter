@@ -64,7 +64,10 @@ gc()
 # It calculates around 130,154 users per hour.
 # I calculated this by dividing the running hours on 2021-01-22 at 1 pm (13 hours at that moment), and the 1,692,000 processed users until that time.
 # From user 1,692,000 to 2,610,100 it took 84 minutes, meaning that it did 655,714 users per hour. User 2,610,100 had 19 followers.
-# For users with only 2 followers, it did 1,372,454 per hour. Computation: From user 29,890,101 to 30,452,807 it took 24.6 minutes.
+# For users with only 2 followers, it did 1,372,454 users per hour. Computation: From user 29,890,101 to 30,452,807 it took 24.6 minutes.
+# From user 30,450,100 to 30,500,000 it took 2.26 minutes (1,324,779 users per hour).
+# From user 30,450,100 to 39,320,000 it took 397 minutes (1,340,539 users per hour).
+# From user 30,450,100 to 63,740,000 it took 1436 minutes (1,390,943 users per hour).
 last_index_to_do = tail(indices_to_do, 1)
 start_time = Sys.time()
 for(i in indices_to_do){
@@ -111,7 +114,8 @@ for(i in indices_to_do){
   
 }
 
-
+# Write last users not saved in checkpoint
+write_fst(info_users_A, n_followback_A_filename)
 
 
 
