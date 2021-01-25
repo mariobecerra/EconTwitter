@@ -18,6 +18,7 @@ data <- read_csv(
   skip = 1,
   col_names = c("id_str", "followers_count", "friends_count"),
   col_types = cols_only(
+    col_skip(), # "1st row_id",
     col_skip(), # "row_id",
     col_skip(), # "id",
     col_character(), # "id_str",
@@ -38,9 +39,14 @@ data <- read_csv(
     col_skip(), # "profile_image_url_https",
     col_skip() # "default_profile"
     )
-)
+) %>% 
+  mutate(ratio = followers_count/friends_count) %>% 
+  filter(complete.cases(.))
 Sys.time()
 
+
+out_folder = here("temp/plots_and_tables/")
+dir.create(out_folder)
 
 
 # Functions ---------------------------------------------------------------
@@ -112,6 +118,7 @@ ggplot_hist = function(hist_obj, range_min = NULL, range_max = NULL){
 Sys.time()
 # 30 seconds
 # 31,562,700 unique IDs
+# 31,324,370 if leaving only complete cases
 (n_unique_ids = length(unique(data$id_str)))
 Sys.time()
 
@@ -143,7 +150,7 @@ summary_data_tibble = summary_data %>%
 
 summary_data_tibble
 
-write_csv(summary_data_tibble, here("temp/followers_friends_count_statistics.csv"))
+write_csv(summary_data_tibble, paste0(out_folder, "data_followers_friends_count_statistics.csv"))
 
 
 # 10 seconds
@@ -153,7 +160,7 @@ followers_histogram = ggplot_hist(followers_count_hist_bins, range_min = 0, rang
   ggtitle("Followers count histogram") +
   scale_y_continuous(label = comma)
 print(followers_histogram)
-ggsave(plot = followers_histogram, filename = here("temp/followers_histogram.png"))
+ggsave(plot = followers_histogram, filename = paste0(out_folder, "followers_histogram.png"))
 
 
 friends_count_hist_bins = create_hist_bins(data$friends_count, n_bins = 30, range_min = 0, range_max = 100, min_x = 0, max_x = 1.3e+18)
@@ -162,12 +169,34 @@ friends_histogram = ggplot_hist(friends_count_hist_bins, range_min = 0, range_ma
   ggtitle("Friends count histogram") +
   scale_y_continuous(label = comma)
 print(friends_histogram)
-ggsave(plot = friends_histogram, filename = here("temp/followers_histogram.png"))
+ggsave(plot = friends_histogram, filename = paste0(out_folder, "friends_histogram.png"))
+
+
+ratio_count_hist_bins = create_hist_bins(data$ratio, n_bins = 30, range_min = 0, range_max = 1000, min_x = 0, max_x = 1.3e+18)
+ratio_histogram = ggplot_hist(ratio_count_hist_bins, range_min = 0, range_max = 1000) +
+  xlab("Ratio") +
+  ggtitle("Followers/friends histogram") +
+  scale_y_continuous(label = comma)
+print(ratio_histogram)
+ggsave(plot = ratio_histogram, filename = paste0(out_folder, "ratio_histogram.png"))
 
 
 
+ratio_histogram2 = data.frame(
+  mids = ratio_count_hist_bins$mids,
+  counts = ratio_count_hist_bins$counts
+) %>% 
+  filter(mids < 1000) %>% 
+  bind_rows(tibble(mids = Inf, counts = sum(data$ratio > 1000))) %>% 
+  mutate(mids_string = as.character(round(mids))) %>% 
+  mutate(mids_string = ifelse(mids_string == "Inf", " > 1000", mids_string)) %>% 
+  mutate(mids_fct = fct_reorder(mids_string, mids)) %>% 
+  ggplot() +
+  geom_bar(aes(mids_fct, counts), stat = "identity") +
+  xlab("Ratio") +
+  ggtitle("Followers/friends histogram")
 
-
+ggsave(plot = ratio_histogram2, filename = paste0(out_folder, "ratio_histogram2.png"))
 
 
 
