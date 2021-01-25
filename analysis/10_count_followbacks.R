@@ -68,6 +68,7 @@ gc()
 # From user 30,450,100 to 30,500,000 it took 2.26 minutes (1,324,779 users per hour).
 # From user 30,450,100 to 39,320,000 it took 397 minutes (1,340,539 users per hour).
 # From user 30,450,100 to 63,740,000 it took 1436 minutes (1,390,943 users per hour).
+# From user 30,450,100 to 78,871,700 it took 2081 minutes (1,396,106 users per hour).
 last_index_to_do = tail(indices_to_do, 1)
 start_time = Sys.time()
 for(i in indices_to_do){
