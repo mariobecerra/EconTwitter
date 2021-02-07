@@ -1,4 +1,7 @@
 # Reads relation.csv file in parts, appends it the new IDs for columns A and B, and saves the new relations in a csv file with the new IDs. It saves only the new IDs and not the older ones. It has the same order as the original relation.csv file.
+# The whole script takes around 169 minutes (2.8 hours).
+
+cat("Script starts at", as.character(Sys.time()), "\n")
 
 # Setup -------------------------------------------------------------------
 
@@ -11,6 +14,16 @@ library(here)
 
 relation_chunks_folder = "temp/relation_chunks/"
 relation_file = here("data/relation.csv")
+output_filename = here("temp/relation_newids.csv")
+
+if(file.exists(output_filename)){
+  # If file already exists then the old file will be renamed (I add a random integer at the end of the name)
+  new_filename = here(paste0("temp/relation_newids_old_", round(10000*runif(1)), ".csv"))
+  warning("File already exists. Will copy old file and rename to ", new_filename)
+  
+  file.copy(output_filename, new_filename, overwrite = T)
+  file.remove(output_filename)
+}
 
 # Code --------------------------------------------------------------------
 
@@ -18,7 +31,7 @@ relation_file = here("data/relation.csv")
 n_rows_per_iter_usermap = 5000000
 
 
-n_rows = 448411843 # 448,411,842 without header
+n_rows = 448411842 # 448,411,842 without header
 n_chunks = 10
 n_rows_per_iter = ceiling(n_rows/n_chunks)
 
@@ -137,7 +150,7 @@ for(i in 1:n_chunks){
     select(new_A, new_B) 
   cat("Done.\n")
   
-  fwrite(chunk_write, file = here("temp/relation_newids.csv"), append = T)
+  fwrite(chunk_write, file = output_filename, append = T)
   
   end_time_chunk = Sys.time()
   minutes_passed_chunk = round(as.numeric(difftime(end_time_chunk, start_time_chunk, units = "mins")), 2)
@@ -145,74 +158,8 @@ for(i in 1:n_chunks){
   
 }
 
+cat("Script ends at", as.character(Sys.time()), "\n")
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(t1 = Sys.time())
-user_ids = fread(
-  file = here(paste0(relation_chunks_folder, "user_id_mapping.csv")),
-  colClasses = list(character = 1, integer = 2),
-  header = T
-)
-(t2 = Sys.time())
-t2 - t1
-
-
-n_rows = 448411843 # 448,411,842 without header
-n_chunks = 10
-n_rows_per_iter = ceiling(n_rows/n_chunks)
-
-for(i in 1:n_chunks){
-  start_time_chunk = Sys.time()
-  cat("Chunk ", i, " starting at ", as.character(start_time_chunk), "\n", sep = "")
-  
-  
-  t1 = Sys.time()
-  skip_chunk_i = (i-1)*n_rows_per_iter + 1
-  cat("\tStarting to read from line ", scales::comma(skip_chunk_i), "...", sep = "")
-  chunk = fread(
-    relation_file, 
-    colClasses = list(character = 1:2), 
-    skip = skip_chunk_i,
-    nrows = n_rows_per_iter,
-    header = F
-  ) 
-  
-  t2 = Sys.time()
-  minutes_passed = round(as.numeric(difftime(t2, t1, units = "mins")), 2)
-  cat("Successfully read", scales::comma(nrow(chunk)), "lines in chunk", i, ". Elapsed time reading:", minutes_passed, "minutes.\n")
-  
-  chunk = chunk %>% 
-    left_join(
-      user_ids,
-      by = c("V1" = "user")
-    ) %>% 
-    left_join(
-      user_ids,
-      by = c("V2" = "user")
-    )
-  
-  fwrite(chunk, file = here("temp/relation_newids.csv"), append = T)
-  
-  end_time_chunk = Sys.time()
-  minutes_passed_chunk = round(as.numeric(difftime(end_time_chunk, start_time_chunk, units = "mins")), 2)
-  cat("\tElapsed time in chunk: ", minutes_passed_chunk, " minutes.\n\n\n", sep = "")
-  
-}

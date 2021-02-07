@@ -1,5 +1,6 @@
-# reads relation.csv in chunks and saves the counts of unique users in each chunk.
-# It also indexes where each user is located (but in the end I modified the code, so this is not used because it is not useful.)
+# Reads relation.csv in chunks and saves the counts of unique users in each chunk.
+# Whole script takes around 74 minutes.
+# Originally, it also used to index where each user is located (but in the end I modified the code, so this is not used because it is not useful.)
 
 # Setup -------------------------------------------------------------------
 
@@ -29,7 +30,7 @@ relation_file = here("data/relation.csv")
 
 # Code --------------------------------------------------------------------
 
-n_rows = 448411843 # 448,411,842 without header
+n_rows = 448411842 # 448,411,841 without header
 n_chunks = 10
 n_rows_per_iter = ceiling(n_rows/n_chunks)
 
@@ -67,12 +68,10 @@ for(i in 1:n_chunks){
   cat("\tCreating count tibble for column A...")
   n_followers_A = sapply(index_A_list, length) # Around 30 seconds
   
-  # This tibble has each unique user in the A column, its number of followers, and in which position of index_A_list it is
+  # This tibble has each unique user in the A column and its number of followers
   counts_A = tibble(
     user = names(n_followers_A),
-    n_followers = n_followers_A,
-    ix_index_list = 1:length(n_followers_A)
-  ) %>% 
+    n_followers = n_followers_A) %>% 
     arrange(desc(n_followers))
   
   t2 = Sys.time()
@@ -105,12 +104,10 @@ for(i in 1:n_chunks){
   cat("\tCreating count tibble for column B...")
   n_appearances_B = sapply(index_B_list, length) # Around 30 seconds
   
-  # This tibble has each unique user in the B column, its number of appearances, and in which position of index_B_list it is
+  # This tibble has each unique user in the B column and its number of appearances
   counts_B = tibble(
     user = names(n_appearances_B),
-    n_appearances = n_appearances_B,
-    ix_index_list = 1:length(n_appearances_B)
-  ) %>% 
+    n_appearances = n_appearances_B) %>% 
     arrange(desc(n_appearances))
   t2 = Sys.time()
   minutes_passed = round(as.numeric(difftime(t2, t1, units = "mins")), 2)
