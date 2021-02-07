@@ -1,6 +1,6 @@
 # Computes indices of where each ID of column A is in relation_newids.csv and relation_newids.fst.
 # It reads relation.fst in chunks (a total of 20 chunks), finds the row of each user, saves this into a tibble, and saves this tibble into a fst file (indices_A_chunk_i.fst).
-# In the end an extra fst file is created (chunk_index_A.fst) that has the information of the information of each user in each chunk. This chunk_index_A.fst file is ordered by user and has two columns: user and chunk.
+# The whole script takes around 10 minutes to run.
 
 t_init_script = Sys.time()
 cat("Script starts at", as.character(t_init_script), "\n")
@@ -32,14 +32,9 @@ relation_A = read_fst(
 (t2 = Sys.time())
 t2 - t1
 
-
-
-# Whole process takes around half an hour
-
 n_rows = nrow(relation_A)
 n_chunks = 20
 n_rows_per_iter = ceiling(n_rows/n_chunks)
-
 
 
 chunk_index_A = lapply(1:n_chunks, function(i){
@@ -91,14 +86,7 @@ chunk_index_A = lapply(1:n_chunks, function(i){
   return(out)
   
 }) %>% 
-  bind_rows() %>% 
-  arrange(user)
-
-
-Sys.time()
-write_fst(chunk_index_A, paste0(output_folder, "chunk_index_A.fst"), compress = 0)
-Sys.time()
-
+  bind_rows() 
 
 t_end_script = Sys.time()
 cat("Script ends at", as.character(t_end_script), "\n")
