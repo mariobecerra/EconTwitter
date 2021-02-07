@@ -6,7 +6,7 @@ library(data.table)
 library(fst)
 library(here)
 
-chunk_folder = here("temp/")
+chunk_folder = here("temp/indices_A_folder/")
 
 (t1 = Sys.time())
 indices_A = read_fst(paste0(chunk_folder, "indices_A.fst"))

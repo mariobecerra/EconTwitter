@@ -7,7 +7,7 @@ library(data.table)
 library(fst)
 library(here)
 
-chunk_folder = here("temp/")
+chunk_folder = here("temp/indices_A_folder/")
 
 indices_A_files = grep(pattern = "indices_A_chunk_", x = list.files(chunk_folder), value = T)
 
